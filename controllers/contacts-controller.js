@@ -3,13 +3,20 @@ import wrapController from "../decorators/controllerWrapper.js";
 import Contact from "../models/Contact.js";
 
 const getAll = async (req, res, next) => {
-  const result = await Contact.find();
+  const { _id: owner } = req.user;
+  const { page = 1, limit = 20 } = req.query;
+  const skip = (page - 1) * limit;
+  const result = await Contact.find({ owner }, "-createdAt -updatedAt", {
+    skip,
+    limit,
+  }).populate("owner", "email");
   res.json(result);
 };
 
 const getByID = async (req, res, next) => {
   const { contactId } = req.params;
-  const result = await Contact.findById(contactId);
+  const { _id: owner } = req.user;
+  const result = await Contact.findById({ contactId, owner });
   if (!result) {
     return next(HttpError(404, "Not found"));
   }
@@ -17,13 +24,15 @@ const getByID = async (req, res, next) => {
 };
 
 const add = async (req, res, next) => {
-  const result = await Contact.create(req.body);
+  const { _id: owner } = req.user;
+  const result = await Contact.create({ ...req.body, owner });
   res.status(201).json(result);
 };
 
 const deleteByID = async (req, res, next) => {
   const { contactId } = req.params;
-  const result = await Contact.findByIdAndDelete(contactId);
+  const { _id: owner } = req.user;
+  const result = await Contact.findByIdAndDelete({ contactId, owner });
   if (!result) {
     return next(HttpError(404, "Not found"));
   }
@@ -32,10 +41,15 @@ const deleteByID = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   const { contactId } = req.params;
-  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const { _id: owner } = req.user;
+  const result = await Contact.findByIdAndUpdate(
+    { contactId, owner },
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
   if (!result) {
     return next(HttpError(404, "Not found"));
   }

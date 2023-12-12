@@ -6,20 +6,21 @@ export const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
 const userSchema = new Schema(
   {
-    username: {
+    password: {
       type: String,
+      required: [true, "Set password for user"],
     },
     email: {
       type: String,
-      required: true,
+      required: [true, "Email is required"],
       unique: true,
-      match: emailRegex,
     },
-    password: {
+    subscription: {
       type: String,
-      required: true,
-      minLength: 6,
+      enum: ["starter", "pro", "business"],
+      default: "starter",
     },
+    token: String,
   },
   { versionKey: false, timestamps: true }
 );
