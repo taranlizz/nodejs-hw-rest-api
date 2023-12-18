@@ -12,3 +12,10 @@ export const userAuthSchema = Joi.object({
     .required()
     .messages(ErrorMessage("password", 6)),
 });
+
+export const userEmailSchema = Joi.object({
+  email: Joi.string()
+    .pattern(emailRegex)
+    .required()
+    .messages(ErrorMessage("email")),
+});
