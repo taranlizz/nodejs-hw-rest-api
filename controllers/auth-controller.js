@@ -85,6 +85,9 @@ const changeAvatar = async (req, res) => {
   if (!id) {
     throw HttpError(401, "Not authorized");
   }
+  if (!req.file) {
+    throw HttpError(400, "No image");
+  }
   const { path: oldPath, filename } = req.file;
 
   console.log(oldPath);
