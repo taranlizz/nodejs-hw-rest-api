@@ -87,9 +87,12 @@ const changeAvatar = async (req, res) => {
   }
   const { path: oldPath, filename } = req.file;
 
-  resizeImage(oldPath, 250, 250);
+  console.log(oldPath);
 
   const newPath = path.join(avatarsPath, filename);
+
+  resizeImage(oldPath, newPath, 250, 250);
+
   await fs.rename(oldPath, newPath);
 
   const avatarURL = path.join("avatars", filename);
